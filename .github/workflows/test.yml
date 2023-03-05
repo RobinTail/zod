@@ -18,7 +18,7 @@ jobs:
     name: Test with TypeScript ${{ matrix.typescript }} on Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
       - run: yarn install
@@ -35,7 +35,7 @@ jobs:
     name: Lint on Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
       - run: yarn install
