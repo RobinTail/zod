@@ -3,10 +3,10 @@ name: test
 on:
   push:
     branches:
-      - "master"
+      - "@express-zod-api/zod"
   pull_request:
     branches:
-      - master
+      - "@express-zod-api/zod"
 
 jobs:
   test-node:
@@ -17,7 +17,7 @@ jobs:
         typescript: ["4.5", "4.6", "4.7", "4.8", "4.9"]
     name: Test with TypeScript ${{ matrix.typescript }} on Node ${{ matrix.node }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
@@ -27,34 +27,6 @@ jobs:
       - run: yarn test
 
 
-  test-deno:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        deno: ["v1.x"]
-    name: Test with Deno ${{ matrix.deno }}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 16
-      - uses: denolib/setup-deno@v2
-        with:
-          deno-version: ${{ matrix.deno }}
-      - run: yarn install
-      - run: yarn build:deno
-      - run: deno --version
-      - run: deno test
-        working-directory: ./deno/lib
-      - run: deno run ./index.ts
-        working-directory: ./deno/lib
-      - run: deno run ./mod.ts
-        working-directory: ./deno/lib
-      - run: |
-          deno bundle ./mod.ts ./bundle.js
-          deno run ./bundle.js
-        working-directory: ./deno/lib
-
   lint:
     runs-on: ubuntu-latest
     strategy:
@@ -62,7 +34,7 @@ jobs:
         node: ["18"]
     name: Lint on Node ${{ matrix.node }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
