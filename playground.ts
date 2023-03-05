@@ -1,40 +1,14 @@
-import { z, ZodFormattedError } from "./src";
+import { z } from "./src";
 
-enum Color {
-  RED,
-  GREEN,
-  BLUE,
-}
+const schema = z.object({ array: z.string().array().min(42) }).deepPartial();
 
-z.string().datetime();
+console.log(schema.shape.array._def);
+console.log(schema.shape.array._def.innerType._def.minLength);
 
-async function main() {
-  const schema = z.coerce.string();
-  console.log(schema.parse(1234));
-  console.log(schema.parse(1234n));
-  console.log(schema.parse(true));
-  console.log(schema.parse(new Date()));
+// works as expected
+console.log(schema.safeParse({}).success); // true
 
-  const n = z.coerce.number();
-  console.log(schema.parse(1234));
-  console.log(schema.parse(1234n));
-  console.log(schema.parse(true));
-  console.log(schema.parse(new Date()));
-}
-main();
+// should be false, but is true
+console.log(schema.safeParse({ array: [] }).success); // true
 
-const user = z
-  .object({
-    email: z.string(),
-    username: z.string(),
-  })
-  .partial();
-
-const requiredEmail = user.required({
-  email: true,
-});
-
-const TUNA = Symbol("tuna");
-const schema = z.literal(TUNA);
-schema.parse(TUNA); // Symbol(tuna)
-schema.parse(Symbol("nottuna")); // Error
+console.log(z.string().array().min(42).safeParse([]).success);

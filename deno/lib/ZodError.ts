@@ -50,6 +50,7 @@ export interface ZodInvalidTypeIssue extends ZodIssueBase {
 export interface ZodInvalidLiteralIssue extends ZodIssueBase {
   code: typeof ZodIssueCode.invalid_literal;
   expected: unknown;
+  received: unknown;
 }
 
 export interface ZodUnrecognizedKeysIssue extends ZodIssueBase {
@@ -90,10 +91,14 @@ export interface ZodInvalidDateIssue extends ZodIssueBase {
 export type StringValidation =
   | "email"
   | "url"
+  | "emoji"
   | "uuid"
   | "regex"
   | "cuid"
+  | "cuid2"
   | "datetime"
+  | "ip"
+  | { includes: string; position?: number }
   | { startsWith: string }
   | { endsWith: string };
 
@@ -104,16 +109,18 @@ export interface ZodInvalidStringIssue extends ZodIssueBase {
 
 export interface ZodTooSmallIssue extends ZodIssueBase {
   code: typeof ZodIssueCode.too_small;
-  minimum: number;
+  minimum: number | bigint;
   inclusive: boolean;
-  type: "array" | "string" | "number" | "set" | "date";
+  exact?: boolean;
+  type: "array" | "string" | "number" | "set" | "date" | "bigint";
 }
 
 export interface ZodTooBigIssue extends ZodIssueBase {
   code: typeof ZodIssueCode.too_big;
-  maximum: number;
+  maximum: number | bigint;
   inclusive: boolean;
-  type: "array" | "string" | "number" | "set" | "date";
+  exact?: boolean;
+  type: "array" | "string" | "number" | "set" | "date" | "bigint";
 }
 
 export interface ZodInvalidIntersectionTypesIssue extends ZodIssueBase {
@@ -122,7 +129,7 @@ export interface ZodInvalidIntersectionTypesIssue extends ZodIssueBase {
 
 export interface ZodNotMultipleOfIssue extends ZodIssueBase {
   code: typeof ZodIssueCode.not_multiple_of;
-  multipleOf: number;
+  multipleOf: number | bigint;
 }
 
 export interface ZodNotFiniteIssue extends ZodIssueBase {
@@ -164,15 +171,17 @@ export const quotelessJson = (obj: any) => {
   return json.replace(/"([^"]+)":/g, "$1:");
 };
 
+type recursiveZodFormattedError<T> = T extends [any, ...any[]]
+  ? { [K in keyof T]?: ZodFormattedError<T[K]> }
+  : T extends any[]
+  ? { [k: number]: ZodFormattedError<T[number]> }
+  : T extends object
+  ? { [K in keyof T]?: ZodFormattedError<T[K]> }
+  : unknown;
+
 export type ZodFormattedError<T, U = string> = {
   _errors: U[];
-} & (NonNullable<T> extends [any, ...any[]]
-  ? { [K in keyof NonNullable<T>]?: ZodFormattedError<NonNullable<T>[K]> }
-  : NonNullable<T> extends any[]
-  ? { [k: number]: ZodFormattedError<NonNullable<T>[number]> }
-  : NonNullable<T> extends object
-  ? { [K in keyof NonNullable<T>]?: ZodFormattedError<NonNullable<T>[K]> }
-  : unknown);
+} & recursiveZodFormattedError<NonNullable<T>>;
 
 export type inferFormattedError<
   T extends ZodType<any, any, any>,
