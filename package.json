@@ -1,5 +1,5 @@
 {
-  "name": "zod",
+  "name": "@express-zod-api/zod",
   "version": "3.21.0",
   "author": "Colin McDonnell <colin@colinhacks.com>",
   "repository": {
@@ -49,7 +49,7 @@
   "bugs": {
     "url": "https://github.com/colinhacks/zod/issues"
   },
-  "description": "TypeScript-first schema declaration and validation library with static type inference",
+  "description": "The for of zod for the needs of express-zod-api",
   "files": [
     "/lib",
     "/index.d.ts"
@@ -102,5 +102,8 @@
     }
   },
   "types": "./index.d.ts",
-  "dependencies": {}
+  "dependencies": {},
+  "publishConfig": {
+    "access": "public"
+  }
 }
